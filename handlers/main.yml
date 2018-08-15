@@ -1,0 +1,14 @@
+---
+# handlers file for monitorix
+
+- name: Restart Apache
+  become: true
+  service:
+    name: httpd
+    state: restarted
+
+- name: Restart Monitorix
+  become: true
+  service:
+    name: monitorix
+    state: restarted

@@ -1,0 +1,15 @@
+Alias /monitorix {{ monitorix_config_base_dir }}
+ScriptAlias /{{ monitorix_config_base_cgi }} {{ monitorix_config_base_dir }}/cgi
+
+<Directory {{ monitorix_config_base_dir }}>
+  AuthType Basic
+  AuthName "basic_auth"
+  AuthBasicProvider external
+  AuthExternal pwauth
+  Require valid-user
+</Directory>
+
+<Directory /var/lib/monitorix/www/cgi/>
+        DirectoryIndex monitorix.cgi
+        Options ExecCGI
+</Directory>

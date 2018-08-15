@@ -1,0 +1,79 @@
+---
+# tasks file for monitorix
+# - name: Install pwauth
+#   yum:
+#     - name: pwauth
+#       state: latest
+#
+# - name: Make sure apache is installed
+#   yum:
+#     - name: httpd
+#       state: latest
+#
+# - name: Install mod_authnz_external
+#   yum:
+#     - name: mod_authnz_external
+#       state: latest
+#
+# - name: Install Monitorix Package
+#   yum:
+#     - name: monitorix
+#       state: latest
+
+- name: Install Monitorix and dependencies
+  yum:
+    name: "{{ monitorix_required_packages }}"
+    state: latest
+
+- name: Enable Apache
+  service:
+    name: httpd
+    enabled: true
+    state: started 
+
+- name: Configure Monitorx CGI
+  file:
+    src: monitorix.conf.path
+    dest: /var/lib/monitorix/www/cgi/monitorix.conf.path
+    
+- name: Configure Monitorix
+  template:
+    src: monitorix.conf.j2
+    dest: /etc/monitorix/monitorix.conf
+  notifies:
+    - Restart Monitorix
+
+- name: Set image directory permissions
+  file:
+    dest: "{{ monitorix_config_base_dir }}/img/"
+    owner: nobody
+    group: apache
+    mode: u=rwX,g=rwX,o=rX
+    recurse: yes
+
+- name: Get RRD files
+  find:
+    paths: "{{ monitorix_config_base_lib }}"
+    patterns: "*.rrd"
+    recurse: true
+  register: find_results
+
+
+- name: Set RRD scripts' SELinux Context
+  file:
+    dest: "{{ item['path'] }}"
+    setype: httpd_sys_script_exec_t
+  with_items: "{{ find_results['files'] }}"
+
+- name: Start monitorix
+  service:
+    name: monitorix
+    enabled: true
+    state: started 
+
+- name: Configure Apache
+  template:
+    src: monitorix-apache.conf.j2
+    dest: /etc/httpd/conf.d/monitorix-apache.conf
+  notifies:
+    - Restart Apache
