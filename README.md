@@ -58,7 +58,7 @@ Example Playbook
 
 ```yaml
 - name: Setup Monitoring
-  hosts: thf-poc-servers
+  hosts: poc-servers
   become: true
   tags:
     - monitoring
