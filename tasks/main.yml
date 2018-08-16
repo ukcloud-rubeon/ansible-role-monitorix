@@ -25,16 +25,17 @@
     name: "{{ monitorix_required_packages }}"
     state: latest
 
-- name: Enable Apache
-  service:
-    name: httpd
-    enabled: true
-    state: started 
+# - name: Enable Apache
+#   service:
+#     name: httpd
+#     enabled: true
+#     state: started
 
 - name: Configure Monitorx CGI
-  file:
-    src: monitorix.conf.path
+  template:
+    src: monitorix.conf.path.j2
     dest: /var/lib/monitorix/www/cgi/monitorix.conf.path
+    
     
 - name: Configure Monitorix
   template:
@@ -46,11 +47,16 @@
 - name: Set image directory permissions
   file:
     dest: "{{ monitorix_config_base_dir }}/img/"
-    owner: nobody
-    group: apache
+    owner: root
+    group: root
     mode: u=rwX,g=rwX,o=rX
     recurse: yes
 
+- name: Start monitorix
+  service:
+    name: monitorix
+    enabled: true
+    state: started 
 - name: Get RRD files
   find:
     paths: "{{ monitorix_config_base_lib }}"
@@ -65,15 +71,10 @@
     setype: httpd_sys_script_exec_t
   with_items: "{{ find_results['files'] }}"
 
-- name: Start monitorix
-  service:
-    name: monitorix
-    enabled: true
-    state: started 
 
-- name: Configure Apache
-  template:
-    src: monitorix-apache.conf.j2
-    dest: /etc/httpd/conf.d/monitorix-apache.conf
-  notifies:
-    - Restart Apache
+# - name: Configure Apache
+#   template:
+#     src: monitorix-apache.conf.j2
+#     dest: /etc/httpd/conf.d/monitorix-apache.conf
+#   notifies:
+#     - Restart Apache

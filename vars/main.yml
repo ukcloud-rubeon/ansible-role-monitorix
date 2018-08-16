@@ -9,7 +9,7 @@ monitorix_config_base_dir: /var/lib/monitorix/www
 monitorix_config_base_url: /monitorix
 monitorix_config_base_cgi: /monitorix-cgi
 monitorix_config_base_lib:  /var/lib/monitorix/
-monitorix_config_httpd_builtin_enabled: n
+monitorix_config_httpd_builtin_enabled: y
 monitorix_config_httpd_builtin_port: 8080
 monitorix_config_httpd_builtin_user: nobody
 monitorix_config_httpd_builtin_group: nobody
@@ -31,8 +31,6 @@ monitorix_config_squid_log: /var/log/squid/access.log
 
 monitorix_required_packages:
   - pwauth
-  - httpd
-  - mod_authnz_external
   - monitorix
   - net-tools
   
