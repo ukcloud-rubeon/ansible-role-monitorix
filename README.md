@@ -56,6 +56,7 @@ None.
 Example Playbook
 ----------------
 
+```yaml
 - name: Setup Monitoring
   hosts: thf-poc-servers
   become: true
@@ -63,7 +64,7 @@ Example Playbook
     - monitoring
   roles:
     - role: monitorix
-
+```
 License
 -------
 
